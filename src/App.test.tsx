@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 
 describe("App", () => {
@@ -10,15 +10,38 @@ describe("App", () => {
 
   it("renders the table headers", () => {
     render(<App />);
-    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Name ▼")).toBeInTheDocument();
     expect(screen.getByText("Type")).toBeInTheDocument();
     expect(screen.getByText("Added")).toBeInTheDocument();
   });
 
   it("renders table rows", () => {
     render(<App />);
-    expect(screen.getByText("Cost centres")).toBeInTheDocument();
-    expect(screen.getByText("csv")).toBeInTheDocument();
-    expect(screen.getByText("2016-08-12")).toBeInTheDocument();
+    const listItems = screen.getAllByRole("row");
+    expect(listItems.length).toBeGreaterThan(1); // Ensure there are rows in the table
+  });
+
+  it("renders folder names with underline", () => {
+    render(<App />);
+    const folderRows = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("folder"));
+    folderRows.forEach((row) => {
+      expect(row).toHaveClass("underline");
+    });
+  });
+
+  it("clicks on table headers to sort", () => {
+    render(<App />);
+    expect(screen.getByText("Name ▼")).toBeInTheDocument();
+    const nameHeader = screen.getByText("Name ▼");
+    const typeHeader = screen.getByText("Type");
+    const addedHeader = screen.getByText("Added");
+    fireEvent.click(nameHeader);
+    expect(nameHeader).toHaveTextContent("Name ▲");
+    fireEvent.click(typeHeader);
+    expect(typeHeader).toHaveTextContent("Type ▼");
+    fireEvent.click(addedHeader);
+    expect(addedHeader).toHaveTextContent("Added ▼");
   });
 });

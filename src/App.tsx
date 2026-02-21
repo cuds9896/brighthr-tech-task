@@ -1,22 +1,63 @@
+import { useEffect, useState } from "react";
 import { mockData } from "./constants/mockData";
+import { sortArrayOnField } from "./utils/sortArrayOnField";
 
 function App() {
+  const [sortedMockData, setSortedMockData] = useState(mockData);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortKey, setSortKey] = useState<string | null>(null);
+
+  const handleSort = (key: string) => {
+    const sortedData = sortArrayOnField(
+      sortedMockData,
+      key as keyof (typeof sortedMockData)[0],
+      sortDirection,
+    );
+    setSortedMockData(sortedData);
+    setSortDirection(
+      sortKey === key ? (sortDirection === "asc" ? "desc" : "asc") : "asc",
+    );
+    setSortKey(key);
+  };
+
+  useEffect(() => {
+    handleSort("name");
+  }, []);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">BrightHR tech task</h1>
       <table className="w-full border-collapse rounded-2xl overflow-hidden">
         <thead>
           <tr className="flex flex-row bg-gray-200 items-center justify-between gap-4 p-2 border-b">
-            <th className="w-48 p-2 text-left">Name</th>
-            <th className="w-48 p-2 text-left">Type</th>
-            <th className="w-48 p-2 text-left">Added</th>
+            <th
+              className="w-48 p-2 text-left underline cursor-pointer"
+              onClick={() => handleSort("name")}
+            >
+              Name{" "}
+              {sortKey === "name" ? (sortDirection === "asc" ? "▼" : "▲") : ""}
+            </th>
+            <th
+              className="w-48 p-2 text-left underline cursor-pointer"
+              onClick={() => handleSort("type")}
+            >
+              Type{" "}
+              {sortKey === "type" ? (sortDirection === "asc" ? "▼" : "▲") : ""}
+            </th>
+            <th
+              className="w-48 p-2 text-left underline cursor-pointer"
+              onClick={() => handleSort("added")}
+            >
+              Added{" "}
+              {sortKey === "added" ? (sortDirection === "asc" ? "▼" : "▲") : ""}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {mockData.map((item, index) => {
+          {sortedMockData.map((item, index) => {
             return (
               <tr
-                className={`flex flex-row bg-gray-200 items-center justify-between gap-4 p-2 border-b border-gray-400 last:border-0 ${item.type === "folder" ? "underline" : ""}`}
+                className={`flex flex-row bg-gray-200 items-center justify-between gap-4 p-2 border-b border-gray-400 last:border-0 ${item.type === "folder" ? "underline cursor-pointer" : ""}`}
                 key={index}
               >
                 <td className="w-48 px-2">{item.name}</td>

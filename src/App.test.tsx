@@ -57,4 +57,36 @@ describe("App", () => {
       expect(screen.getByText("Expenses claim form")).toBeInTheDocument();
     }
   });
+
+  it("filters the table based on type, only displaying matching rows", () => {
+    render(<App />);
+    const filterSelect = screen.getByRole("combobox");
+    fireEvent.change(filterSelect, { target: { value: "pdf" } });
+    const pdfRows = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("pdf"));
+    expect(pdfRows.length).toBeGreaterThan(0);
+    const folderRows = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("folder"));
+    expect(folderRows.length).toBe(0);
+    const csvRows = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("csv"));
+    expect(csvRows.length).toBe(0);
+
+    fireEvent.change(filterSelect, { target: { value: "folder" } });
+    const folderRowsAfterFilter = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("folder"));
+    expect(folderRowsAfterFilter.length).toBeGreaterThan(0);
+    const csvRowsAfterFilter = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("csv"));
+    expect(csvRowsAfterFilter.length).toBe(0);
+    const pdfRowsAfterFilter = screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("pdf"));
+    expect(pdfRowsAfterFilter.length).toBe(0);
+  });
 });

@@ -10,6 +10,8 @@ function App() {
     new Array(mockData.length).fill(false),
   );
 
+  const uniqueFields = [...new Set(mockData.map((item) => item.type))];
+
   const handleSort = (key: string) => {
     setExpandedFolders(expandedFolders.fill(false));
     const sortedData = sortArrayOnField(
@@ -37,13 +39,37 @@ function App() {
     setExpandedFolders(newExpandedFolders);
   };
 
+  const handleFilterChange = (filter: string) => {
+    setExpandedFolders(expandedFolders.fill(false));
+    const filteredData = mockData.filter((item) =>
+      item.type.toLowerCase().includes(filter.toLowerCase()),
+    );
+    setSortedMockData(filteredData);
+  };
+
   useEffect(() => {
     handleSort("name");
   }, []);
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">BrightHR tech task</h1>
+      <div className="flex flex-column items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold mb-4">BrightHR tech task</h1>
+        <div>
+          Filter:{" "}
+          <select
+            className="border border-gray-300 rounded p-2"
+            onChange={(e) => handleFilterChange(e.target.value)}
+          >
+            <option value="">All</option>
+            {uniqueFields.map((field) => (
+              <option key={field} value={field}>
+                {field}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
       <table className="w-full border-collapse rounded-2xl overflow-hidden">
         <thead>
           <tr className="flex flex-row bg-gray-200 items-center justify-between gap-4 p-2 border-b">

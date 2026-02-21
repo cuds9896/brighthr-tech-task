@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# BrightHR Tech Task - Document Viewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a React & TypeScript project built with Vite that dynamically displays documents in a table. It allows sorting and filtering of the documents, as well as viewing the contents of folders within the list.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Vite - Build tool and dev server
+- React & TypeScript - Component based structure with strict typing rules
+- Vitest & React Testing Library - used for testing
 
-## React Compiler
+## The solution
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The task was to create a single page application that allows the user to view a list of documents uploaded. The following three features were also included as options to pick two from:
 
-## Expanding the ESLint configuration
+- sort based on name / date.
+- filter based on file types.
+- expand folders to view contents.
+  The data provided to be used as mock data was varied enough to carry out any/all of the three additional features, although further expansion could be done for example nested folders, however this was out of scope of the task.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Design decisions
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+In this development, I have made an effort to keep the app as flexible as posssible, so it could be easily expanded in the future with minimal changes. Examples of where I have done this are:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Generating the filtering list based on all unique file types in the data. If a new file type is added, the app will automatically account for this and add it to the filter list, meaning no additional changes to the code is required.
+- Sorting based on table headers. If a new table header is added, the sortArrayOnField util function already accounts for additional keys added to the file system so the only additional logic required for this change is on the main page.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Testing
+
+Vitest test files have been written for all functions of the app. This includes a test file for the sorting util function, and a test file for all features of the main app page.
+
+## How to install
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## How to run
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+## Additional features
+
+Further developments of this application could include:
+
+- Searching by file name.
+- Handling nested folders.
+- Adding icons to allow users to recognise different file types at a glance.
+- Additional themes eg. day/night mode.

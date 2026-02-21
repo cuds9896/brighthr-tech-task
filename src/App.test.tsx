@@ -44,4 +44,17 @@ describe("App", () => {
     fireEvent.click(addedHeader);
     expect(addedHeader).toHaveTextContent("Added ▼");
   });
+
+  it("clicks on folder rows to expand", () => {
+    render(<App />);
+    const folderRow = screen
+      .getAllByRole("row")
+      .find((row) => row.textContent?.includes("folder"));
+    expect(folderRow).toBeInTheDocument();
+    expect(screen.queryByText("Expenses claim form")).not.toBeInTheDocument();
+    if (folderRow) {
+      fireEvent.click(folderRow);
+      expect(screen.getByText("Expenses claim form")).toBeInTheDocument();
+    }
+  });
 });

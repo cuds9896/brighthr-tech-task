@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { mockData } from "./constants/mockData";
 import { sortArrayOnField } from "./utils/sortArrayOnField";
 
@@ -6,18 +6,35 @@ function App() {
   const [sortedMockData, setSortedMockData] = useState(mockData);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [sortKey, setSortKey] = useState<string | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<boolean[]>(
+    new Array(mockData.length).fill(false),
+  );
 
   const handleSort = (key: string) => {
+    setExpandedFolders(expandedFolders.fill(false));
     const sortedData = sortArrayOnField(
       sortedMockData,
       key as keyof (typeof sortedMockData)[0],
-      sortDirection,
+      sortKey === key ? (sortDirection === "asc" ? "desc" : "asc") : "asc",
     );
     setSortedMockData(sortedData);
     setSortDirection(
       sortKey === key ? (sortDirection === "asc" ? "desc" : "asc") : "asc",
     );
     setSortKey(key);
+  };
+
+  const handleFolderClicked = (index: number) => {
+    const item = sortedMockData[index];
+    if (item.type === "folder") {
+      expandFolder(index);
+    }
+  };
+
+  const expandFolder = (index: number) => {
+    const newExpandedFolders = [...expandedFolders];
+    newExpandedFolders[index] = !newExpandedFolders[index];
+    setExpandedFolders(newExpandedFolders);
   };
 
   useEffect(() => {
@@ -56,14 +73,28 @@ function App() {
         <tbody>
           {sortedMockData.map((item, index) => {
             return (
-              <tr
-                className={`flex flex-row bg-gray-200 items-center justify-between gap-4 p-2 border-b border-gray-400 last:border-0 ${item.type === "folder" ? "underline cursor-pointer" : ""}`}
-                key={index}
-              >
-                <td className="w-48 px-2">{item.name}</td>
-                <td className="w-48 px-2">{item.type}</td>
-                <td className="w-48 px-2">{item.added}</td>
-              </tr>
+              <React.Fragment key={index + item.name}>
+                <tr
+                  className={`flex flex-row bg-gray-200 items-center justify-between gap-4 p-2 border-b border-gray-400 last:border-0 ${item.type === "folder" ? "underline cursor-pointer" : ""}`}
+                  onClick={() => handleFolderClicked(index)}
+                >
+                  <td className="w-48 px-2">{item.name}</td>
+                  <td className="w-48 px-2">{item.type}</td>
+                  <td className="w-48 px-2">{item.added}</td>
+                </tr>
+                {expandedFolders[index] && item.type === "folder" && item.files
+                  ? item.files.map((file, fileIndex) => (
+                      <tr
+                        className="flex flex-row bg-gray-100 items-center justify-between gap-4 p-2 border-b border-gray-300 last:border-0 pl-8"
+                        key={`${index}-${fileIndex}`}
+                      >
+                        <td className="w-48 px-2">{file.name}</td>
+                        <td className="w-48 px-2">{file.type}</td>
+                        <td className="w-48 px-2">{file.added}</td>
+                      </tr>
+                    ))
+                  : null}
+              </React.Fragment>
             );
           })}
         </tbody>
